@@ -1,0 +1,15 @@
+driver = webdriver.Chrome('chromedriver')
+driver.get('https://www.instagram.com/explore/tags/#자신이 원하는 태크 입력#')
+
+xpath = '''//*[@id="react-root"]/section/main/article/div[1]/div/div/div[1]/div[1]/a'''
+driver.find_element_by_xpath(xpath).click()
+
+html  = driver.page_source
+soup = BeautifulSoup(html,'html.parser')
+
+insta = soup.find_all('div','C4VMK')
+insta
+
+insta[0].get_text()
+
+#for문으로 돌리기 전 
