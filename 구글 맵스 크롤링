@@ -1,0 +1,41 @@
+###웹 드라이버 실행###
+###크롬드라이버 주소 변경, 크롤링할 구글 맵스 가게 주소로 변경###
+
+driver = webdriver.Chrome('C:/Users/CE206-28/chromedriver_win32/chromedriver.exe')
+driver.get('https://www.google.co.kr/maps/place/%EC%B5%9C%EC%8B%A0%EC%A1%B1%EB%B0%9C/@37.5435857,127.0671498,17z/data=!3m1!4b1!4m5!3m4!1s0x357ca4c25e309e13:0x7bc31af5bbc3b849!8m2!3d37.5435815!4d127.0693385')
+
+###리뷰 모두 보기 클릭###
+
+xpath = """//*[@id="pane"]/div/div[1]/div/div/div[46]/div/div/button/span"""
+driver.find_element_by_xpath(xpath).click()
+
+###스크롤 xpath###
+###맨 처음 스크롤일때만 가능 하나라도 스크롤 내리면 다시 xpath 추출 또는 맨처음으로###
+
+elem = driver.find_element_by_xpath("""//*[@id="pane"]/div/div[1]/div/div/div[2]""")
+
+###스크롤 내리면서 파싱###
+
+no_of_pagedowns = 50
+ 
+while no_of_pagedowns:
+    elem.send_keys(Keys.PAGE_DOWN)
+    time.sleep(0.2)
+    no_of_pagedowns-=1   
+
+html = driver.page_source
+soup = BeautifulSoup(html, 'html.parser')
+raw_list = soup.find_all(class_= "section-review-text")
+
+###파싱한 것들 텍스트만 추출###
+
+choisinzotbal = []
+for n in range(len(raw_list)):
+    choisinzotbal.append(raw_list[n].get_text().replace("\n",""))
+   
+choisinzotbal
+
+###리스트의 빈값들 제거###
+
+jokbal = [x for x in choisinzotbal if x]
+
