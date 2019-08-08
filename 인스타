@@ -12,4 +12,44 @@ insta
 
 insta[0].get_text()
 
-#for문으로 돌리기 전 
+#for문으로 돌리기 전
+
+
+#for문 
+
+xpath = '''//*[@id="react-root"]/section/main/article/div[1]/div/div/div[1]/div[1]/a'''
+driver.find_element_by_xpath(xpath).click()
+
+html  = driver.page_source
+soup = BeautifulSoup(html,'html.parser')
+
+insta = soup.find_all('div','C7I1f X7jCj')
+
+instag = []
+    
+time.sleep(1)
+
+for item in insta:
+    instag.append(item.find(class_='C4VMK').get_text())
+
+
+xpath = '''/html/body/div[4]/div[1]/div/div/a'''
+driver.find_element_by_xpath(xpath).click()
+
+for i in range(5):
+    html  = driver.page_source
+    soup = BeautifulSoup(html,'html.parser')
+    insta = soup.find_all('div','C7I1f X7jCj')
+    
+    time.sleep(1)
+    
+    for item in insta:
+        instag.append(item.find(class_='C4VMK').get_text())
+        
+    time.sleep(1)
+    
+    xpath = '''/html/body/div[4]/div[1]/div/div/a[2]'''
+    driver.find_element_by_xpath(xpath).click()
+    
+    
+    
