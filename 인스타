@@ -1,55 +1,91 @@
+from bs4 import BeautifulSoup
+import time
+from tqdm import tqdm_notebook
+from urllib.request import urlopen
+from time import sleep
+from selenium import webdriver
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys 
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+import csv
+import pandas as pd
+
+data = pd.read_csv("dataset1.csv", encoding='CP949')
+data1 = data[data['분류']== 10000000]
+data1
+
+data_name_10000000 =data1['가게명칭']
+
+data_name_10000000 = data_name_10000000.dropna()
+data_name_10000000 = data_name_10000000.reset_index()
+data_name_10000000
+
+data_name_10000000 =data_name_10000000['가게명칭']
+
+name = 'https://www.instagram.com/explore/tags/'+data_name_10000000[30]
+name
+
+driver.get(name)
+
 driver = webdriver.Chrome('chromedriver')
 driver.get('https://www.instagram.com/explore/tags/#자신이 원하는 태크 입력#')
 
-xpath = '''//*[@id="react-root"]/section/main/article/div[1]/div/div/div[1]/div[1]/a'''
-driver.find_element_by_xpath(xpath).click()
-
-html  = driver.page_source
-soup = BeautifulSoup(html,'html.parser')
-
-insta = soup.find_all('div','C4VMK')
-insta
-
-insta[0].get_text()
-
-#for문으로 돌리기 전
-
-
-#for문 
-
-xpath = '''//*[@id="react-root"]/section/main/article/div[1]/div/div/div[1]/div[1]/a'''
-driver.find_element_by_xpath(xpath).click()
-
-html  = driver.page_source
-soup = BeautifulSoup(html,'html.parser')
-
-insta = soup.find_all('div','C7I1f X7jCj')
-
 instag = []
+for i in range(166):
+    name ='https://www.instagram.com/explore/tags/'+data_name_10000000[i]
+    driver.get(name)
     
-time.sleep(1)
+    time.sleep(1)
+    
+    xpath = '''//*[@id="react-root"]/section/main/article/div[1]/div/div/div[1]/div[1]'''
+     
+    time.sleep(1)
+    
+    driver.find_element_by_xpath(xpath).click()
 
-for item in insta:
-    instag.append(item.find(class_='C4VMK').get_text())
-
-
-xpath = '''/html/body/div[4]/div[1]/div/div/a'''
-driver.find_element_by_xpath(xpath).click()
-
-for i in range(5):
+    time.sleep(1)
+    
     html  = driver.page_source
     soup = BeautifulSoup(html,'html.parser')
+    
+    time.sleep(1)
+    
     insta = soup.find_all('div','C7I1f X7jCj')
     
     time.sleep(1)
-    
+
     for item in insta:
         instag.append(item.find(class_='C4VMK').get_text())
-        
-    time.sleep(1)
-    
-    xpath = '''/html/body/div[4]/div[1]/div/div/a[2]'''
+
+
+    xpath = '''/html/body/div[4]/div[1]/div/div/a'''
     driver.find_element_by_xpath(xpath).click()
     
+    time.sleep(1)
     
+    for i in range(50):
+        html = driver.page_source
+        soup = BeautifulSoup(html,'html.parser')
+        
+        time.sleep(1)
+        
+        insta = soup.find_all('div','C7I1f X7jCj')
     
+        time.sleep(1)
+    
+        for item in insta:
+            instag.append(item.find(class_='C4VMK').get_text())
+        
+        time.sleep(1)
+        
+        xpath = '''/html/body/div[4]/div[1]/div/div/a[2]'''
+        driver.find_element_by_xpath(xpath).click()
+    
+        time.sleep(1)
+       
+        nstag = pd.DataFrame(instag)
+        
+        instag.to_csv('인스타.csv')
