@@ -1,0 +1,63 @@
+from bs4 import BeautifulSoup
+import time
+from tqdm import tqdm_notebook
+from urllib.request import urlopen
+from time import sleep
+from selenium import webdriver
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys 
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+import csv
+import pandas as pd
+data = pd.read_csv("C:/Users/CE206-27/Documents/BigData/gd3.csv",encoding = 'CP949')
+data_name = data['가게명칭']
+driver = webdriver.Chrome('C:/Users/CE206-27/Documents/BigData/Driver/chromedriver_win32/chromedriver.exe')
+driver.get('https://search.naver.com/search.naver?sm=tab_hty.top&where=post&query=&oquery=%EC%B5%9C%EC%8B%A0%EC%A1%B1%EB%B0%9C&tqi=US5fXlp0J1sssbXkE%2B0ssssssVG-120234')
+
+blog = []
+for n in range(len(data_name)):
+    elem = driver.find_element_by_id("nx_query")
+    elem.send_keys(data_name[n])
+    driver.find_element_by_xpath("""//*[@id="nx_search_form"]/fieldset/button""").click()
+    time.sleep(1)
+    driver.find_element_by_xpath("""//*[@id="sp_blog_1"]/dl/dt/a""").click()
+    time.sleep(1)
+    driver.window_handles
+    time.sleep(1)
+    last_tab = driver.window_handles[-1]
+    driver.switch_to.window(window_name=last_tab)
+    try:
+        driver.switch_to_frame("screenFrame")
+    except:
+        driver.switch_to_frame("mainFrame")
+    time.sleep(1)
+    
+    blog.append(data_name[n])
+    
+    html  = driver.page_source
+    soup = BeautifulSoup(html,'html.parser')
+    naver = soup.find_all('div',id='postViewArea')
+    naver2 = soup.find_all('div', class_ = 'se-main-container')
+    time.sleep(1)
+    
+    for n in range(len(naver)):
+        blog.append(naver[n].get_text())
+    for n in range(len(naver2)):
+        blog.append(naver2[n].get_text())
+    
+    time.sleep(1)
+    driver.close()
+    
+    driver.window_handles
+    time.sleep(1)
+    last_tab = driver.window_handles[-1]
+    driver.switch_to.window(window_name=last_tab)
+    time.sleep(1)
+    
+    driver.find_element_by_xpath("""//*[@id="nx_query"]""").clear()
+    
+    blog = pd.DataFrame(blog)
+    blog.to_csv("광진구네이버블로그.csv")
